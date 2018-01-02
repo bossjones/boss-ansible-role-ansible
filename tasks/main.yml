@@ -1,2 +1,37 @@
 ---
 # tasks file for bossjones.ansible
+- name: Install pip, ansible dependencies and rsync.
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-pip
+    - rsync
+    - python-dev
+    - python3-dev
+    - awscli
+
+- name: Install Ansible and PIP dependencies.
+  pip:
+    name: "{{ item }}"
+  with_items:
+    - ansible
+    - markupsafe
+    - boto
+
+- name: Create top folder.
+  file:
+    path: /opt/pv/ansible
+    state: directory
+    owner: vagrant
+    group: vagrant
+
+- name: Create modules folder.
+  file:
+    path: /opt/pv/ansible/modules
+    state: directory
+
+- name: Configure ansible.
+  template:
+    src: ansible.cfg.j2
+    dest: /opt/pv/ansible/ansible.cfg
