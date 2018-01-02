@@ -13,4 +13,5 @@ script:
   - chmod +x ${PWD}/tests/test.sh
 
   # Run tests.
-  - ${PWD}/tests/test.sh
+  # - ${PWD}/tests/test.sh
+  - make ci
