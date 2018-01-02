@@ -23,8 +23,8 @@
   file:
     path: /opt/pv/ansible
     state: directory
-    owner: vagrant
-    group: vagrant
+    owner: "{{ bossjones__user }}"
+    group: "{{ bossjones__group }}"
 
 - name: Create modules folder.
   file:

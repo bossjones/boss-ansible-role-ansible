@@ -2,5 +2,7 @@
 - name: Converge
   hosts: all
   roles:
-    - role: bossjones.ansible
+    - role: boss-ansible-role-ansible
+      bossjones__user: root
+      bossjones__group: root
 

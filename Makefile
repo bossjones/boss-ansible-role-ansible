@@ -44,9 +44,6 @@ current_dir := $(notdir $(patsubst %/,%,$(dir $(mkfile_path))))
 bootstrap-molecule-default:
 	molecule init scenario --role-name $(current_dir) --scenario-name default
 
-ci:
-	molecule test
-
 # NOTE: make this into a bash alias (pretty-yaml)
 pretty-yaml:
 	python -m pyaml /path/to/some/file.yaml
@@ -95,9 +92,21 @@ install-test-deps:
 ci:
 	molecule test
 
+test:
+	molecule test --destroy=always
+
 bootstrap: venv
 
 travis: bootstrap venv ci
+
+travis-osx: bootstrap venv-osx ci
+
+upgrade-setuptools:
+	pip install --ignore-installed --pre "https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip" \
+    && pip install --upgrade setuptools==36.0.1 wheel==0.29.0
+
+which-pip:
+	which pip
 
 # enter virtualenv so we can use Ansible
 activate:
@@ -119,6 +128,26 @@ venv: requirements.txt
 	test -d venv || virtualenv --python=$$PYTHON2 venv;\
 	pip install -r requirements.txt;\
 	pip install -r requirements-dev.txt;\
+	touch venv;\
+
+# The tests are written in Python. Make a virtualenv to handle the dependencies.
+venv-osx: requirements.txt
+	@if [ -z $$PYTHON2 ]; then\
+	    PY2_MINOR_VER=`python2 --version 2>&1 | cut -d " " -f 2 | cut -d "." -f 2`;\
+	    if (( $$PY2_MINOR_VER < 7 )); then\
+		echo "Couldn't find python2 in \$PATH that is >=2.7";\
+		echo "Please install python2.7 or later or explicity define the python2 executable name with \$PYTHON2";\
+	        echo "Exiting here";\
+	        exit 1;\
+	    else\
+		export PYTHON2="python2.$$PY2_MINOR_VER";\
+	    fi;\
+	fi;\
+	test -d venv || virtualenv --python=$$PYTHON2 venv;\
+	ARCHFLAGS="-arch x86_64" LDFLAGS="-L/usr/local/opt/openssl/lib" CFLAGS="-I/usr/local/opt/openssl/include" pip install --ignore-installed --pre "https://github.com/pradyunsg/pip/archive/hotfix/9.0.2.zip#egg=pip" \
+    && pip install --upgrade setuptools==36.0.1 wheel==0.29.0;\
+	ARCHFLAGS="-arch x86_64" LDFLAGS="-L/usr/local/opt/openssl/lib" CFLAGS="-I/usr/local/opt/openssl/include" pip install -r requirements.txt;\
+	ARCHFLAGS="-arch x86_64" LDFLAGS="-L/usr/local/opt/openssl/lib" CFLAGS="-I/usr/local/opt/openssl/include" pip install -r requirements-dev.txt;\
 	touch venv;\
 
 # [ANSIBLE0013] Use shell only when shell functionality is required
