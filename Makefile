@@ -97,6 +97,8 @@ ci:
 
 bootstrap: venv
 
+travis: bootstrap venv ci
+
 # enter virtualenv so we can use Ansible
 activate:
 	. venv/bin/activate
