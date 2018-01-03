@@ -1,0 +1,85 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+  enabled: False
+platforms:
+  - name: instance
+    image: ubuntu:16.04
+    privileged: true
+provisioner:
+  name: ansible
+  # options:
+  #   vvv: True
+  lint:
+    name: ansible-lint
+    enabled: False
+    # EANSIBLE0013 should not be raised for shell tasks that use globs.
+    options:
+      x: ANSIBLE0013
+      # excludes:
+      #   - "*venv"
+verifier:
+  name: testinfra
+  options:
+    verbose: true
+  lint:
+    name: flake8
+    enabled: False
+scenario:
+  name: default
+  # NOTE: Full install process
+  # create_sequence:
+  #   - create
+  #   - prepare
+  # check_sequence:
+  #   - destroy
+  #   - create
+  #   - prepare
+  #   - converge
+  #   - check
+  #   - destroy
+  # converge_sequence:
+  #   - create
+  #   - prepare
+  #   - converge
+  # destroy_sequence:
+  #   - destroy
+  # test_sequence:
+  #   - lint
+  #   - destroy
+  #   - dependency
+  #   - syntax
+  #   - create
+  #   - prepare
+  #   - converge
+  #   - idempotence
+  #   - side_effect
+  #   - verify
+  #   - destroy
+  # test_sequence:
+  #   - destroy
+  #   - syntax
+  #   - create
+  #   - prepare
+  #   - converge
+  #   - lint
+  #   - side_effect
+  #   - verify
+  #   - destroy
+
+  test_sequence:
+    - destroy
+    # - dependency
+    - syntax
+    - create
+    - prepare
+    - converge
+    # - idempotence
+    - lint
+    - side_effect
+    - verify
+    - destroy

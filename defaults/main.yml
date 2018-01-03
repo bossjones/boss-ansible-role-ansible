@@ -1,0 +1,5 @@
+---
+# defaults file for bossjones.ansible
+
+bossjones__user: vagrant
+bossjones__group: vagrant
