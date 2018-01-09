@@ -18,6 +18,8 @@
     - ansible
     - markupsafe
     - boto
+    - awscli
+    - psutil
 
 - name: Create top folder.
   file:
